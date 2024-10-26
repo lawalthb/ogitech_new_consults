@@ -21,7 +21,7 @@
 		</div>
 	</div>
 	<!--end breadcrumb-->
-	<h3> Seach By Date : {{ $formatDate }} | Total Amount:  ₦{{number_format($totalAmount,0)}}</h3>
+	<h3> Seach By Date : {{ $formatDate }} | Total Amount: ₦{{number_format($totalAmount,0)}}</h3>
 	<hr />
 	<a href="/search/by/date?status=pending"> [Pending] </a> | <a href="/search/by/date?status=confirm"> [Confirmed] </a>| <a href="/search/by/date?status=deliverd"> [Delivered] </a>
 	<hr />
@@ -36,6 +36,7 @@
 							<th>Invoice </th>
 							<th>Amount </th>
 							<th>Payment </th>
+							<th>Details </th>
 							<th>Status </th>
 							<th>Action</th>
 						</tr>
@@ -47,7 +48,23 @@
 							<td>{{ $item->order_date }}</td>
 							<td>{{ $item->invoice_no }}</td>
 							<td>₦{{ number_format($item->amount,0) }}</td>
-							<td>@if($item->payment_method == 'PayStack') Online @endif</td>
+
+							<td>@if($item->payment_method == 'PayStack') Online @else {{$item->payment_method}} @endif</td>
+							<td>Buyer: {{ $item->name }} <br />
+
+								<?php
+								$order_id = $item->id;
+								$orderItem = App\Models\OrderItem::with('product')->where('order_id', $order_id)->orderBy('id', 'DESC')->get();
+								$no = 1;
+								foreach ($orderItem as $ord_items) {
+
+									echo  $no++ .')'. $ord_items->product->product_name . '( <b>' . $ord_items->product->vendor->name . '</b>)<br />';
+								}
+
+
+								?>
+
+							</td>
 							<td> <span class="badge rounded-pill bg-success"> {{ $item->status }}</span></td>
 
 							<td>
@@ -69,7 +86,8 @@
 							<th>Invoice </th>
 							<th>Amount </th>
 							<th>Payment </th>
-							<th>State </th>
+							<th>Details</th>
+							<th>Status</th>
 							<th>Action</th>
 						</tr>
 					</tfoot>

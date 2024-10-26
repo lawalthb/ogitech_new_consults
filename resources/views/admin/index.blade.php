@@ -3,14 +3,14 @@
 
 @php
 $date = date('d F Y');
-$today = App\Models\Order::where('order_date',$date)->where('status', 'confirm')->sum('amount');
+$today = App\Models\Order::where('order_date',$date)->whereIn('status', ['confirm', 'deliverd'])->sum('amount');
 
 $month = date('F');
-$month = App\Models\Order::where('order_month',$month)->where('status', 'confirm')->sum('amount');
+$month = App\Models\Order::where('order_month',$month)->whereIn('status', ['confirm', 'deliverd'])->sum('amount');
 
 
 $year = date('Y');
-$year = App\Models\Order::where('order_year',$year)->where('status', 'confirm')->sum('amount');
+$year = App\Models\Order::where('order_year',$year)->whereIn('status', ['confirm', 'deliverd'])->sum('amount');
 
 $pending = App\Models\Order::where('status','pending')->get();
 $deliverd = App\Models\Order::where('status','deliverd')->get();
@@ -94,7 +94,7 @@ $customer = App\Models\User::where('status','active')->where('role','user')->get
 						<a href="{{route('search-by-year')}}" style="color:white">
 							<p class="mb-0">Yearly Sale</p>
 						</a>
-							<p class="mb-0 ms-auto"><span><i class='bx bx-up-arrow-alt'></i></span></p>
+						<p class="mb-0 ms-auto"><span><i class='bx bx-up-arrow-alt'></i></span></p>
 					</div>
 				</div>
 			</div>
