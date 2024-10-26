@@ -41,20 +41,33 @@
 								@endphp
 
 								@forelse($user->notifications as $notification)
-								<a class="dropdown-item" href="/inactive/vendor">
-									<div class="d-flex align-items-center">
-										<div class="notify bg-light-warning text-warning"><i class="bx bx-send"></i>
-										</div>
-										<div class="flex-grow-1">
-											<h6 class="msg-name">Message <span class="msg-time float-end">{{ Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
-												</span></h6>
 
-											<p class="msg-info"> {{ $notification->data['message'] }}
-											</p>
-
-										</div>
+								<div class="d-flex align-items-center">
+									<div class="notify bg-light-warning text-warning"><i class="bx bx-send"></i>
 									</div>
-								</a>
+									<div class="flex-grow-1">
+										<h6 class="msg-name">Message <span class="msg-time float-end">{{ Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
+											</span></h6>
+
+										<p class="msg-info">
+
+											@php
+											$message = $notification->data['message'];
+											if ($message == 'New Order Added in Shop' ){
+											echo "<a class='dropdown-item' href='/pending/order'>".$message."</a>";
+											}else if ($message == ' New Vendor Request' ){
+
+											echo "<a class='dropdown-item' href='/inactive/vendor'>" .$message."</a>";;
+											}else if ($message == 'New User Register In Shop' ){
+
+											echo "<a class='dropdown-item' href='/all/user'>".$message."</a>";;
+											}
+											@endphp
+										</p>
+
+									</div>
+								</div>
+
 								@empty
 
 								@endforelse
