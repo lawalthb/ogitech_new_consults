@@ -21,7 +21,9 @@
 		</div>
 	</div>
 	<!--end breadcrumb-->
-	<h3> Seach By Month - Year : {{ $month }} - {{ $year }}</h3>
+	<h3> Seach By Month - Year : {{ $month }} - {{ $year }} | Total Amount: ₦{{number_format($totalAmount,0)}}</h3>
+	<hr />
+	<a href="/search/by/month?status=pending"> [Pending] </a> | <a href="/search/by/month?status=confirm"> [Confirmed] </a>| <a href="/search/by/month?status=deliverd"> [Delivered] </a>
 	<hr />
 	<div class="card">
 		<div class="card-body">

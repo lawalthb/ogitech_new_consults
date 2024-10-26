@@ -37,11 +37,17 @@ class ReportController extends Controller
     {
 
         $date = new DateTime($request->date);
-
+$status = $_GET['status'] ?? 'confirm';
         $formatDate = $date->format('d F Y');
 
-        $orders = Order::where('order_date', $formatDate)->latest()->get();
-        return view('backend.report.report_by_date', compact('orders', 'formatDate'));
+        $orders = Order::where('order_date', $formatDate)->where('status', $status)->latest()->get();
+
+
+        // Calculate the sum of the 'amount' column
+        $totalAmount = $orders->sum('amount');
+
+
+        return view('backend.report.report_by_date', compact('orders', 'formatDate', 'totalAmount'));
     } // End Method
 
 
@@ -65,6 +71,7 @@ class ReportController extends Controller
     {
 
         $month = $request->month;
+        $status = $_GET['status'] ?? 'confirm';
         $year = $request->year_name;
         if ($year == "Open this select Year") {
 
@@ -75,8 +82,13 @@ class ReportController extends Controller
             $year = $request->year_name ?? Carbon::now()->format('Y');
         }
 
-        $orders = Order::where('order_month', $month)->where('order_year', $year)->latest()->get();
-        return view('backend.report.report_by_month', compact('orders', 'month', 'year'));
+        $orders = Order::where('order_month', $month)->where('order_year', $year)->where('status', $status)->latest()->get();
+
+        // Calculate the sum of the 'amount' column
+        $totalAmount = $orders->sum('amount');
+
+
+        return view('backend.report.report_by_month', compact('orders', 'month', 'year', 'totalAmount'));
     } // End Method
 
 
@@ -84,9 +96,13 @@ class ReportController extends Controller
     {
 
         $year = $request->year ?? Carbon::now()->format('Y');
+        $status = $_GET['status'] ?? 'confirm';
+        $orders = Order::where('order_year', $year)->where('status', $status)->latest()->get();
 
-        $orders = Order::where('order_year', $year)->latest()->get();
-        return view('backend.report.report_by_year', compact('orders', 'year'));
+        // Calculate the sum of the 'amount' column
+        $totalAmount = $orders->sum('amount');
+
+        return view('backend.report.report_by_year', compact('orders', 'year', 'totalAmount'));
     } // End Method
 
 

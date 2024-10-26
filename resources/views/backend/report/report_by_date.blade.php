@@ -21,7 +21,9 @@
 		</div>
 	</div>
 	<!--end breadcrumb-->
-	<h3> Seach By Date : {{ $formatDate }}</h3>
+	<h3> Seach By Date : {{ $formatDate }} | Total Amount:  ₦{{number_format($totalAmount,0)}}</h3>
+	<hr />
+	<a href="/search/by/date?status=pending"> [Pending] </a> | <a href="/search/by/date?status=confirm"> [Confirmed] </a>| <a href="/search/by/date?status=deliverd"> [Delivered] </a>
 	<hr />
 	<div class="card">
 		<div class="card-body">
@@ -34,7 +36,7 @@
 							<th>Invoice </th>
 							<th>Amount </th>
 							<th>Payment </th>
-							<th>State </th>
+							<th>Status </th>
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -45,7 +47,7 @@
 							<td>{{ $item->order_date }}</td>
 							<td>{{ $item->invoice_no }}</td>
 							<td>₦{{ number_format($item->amount,0) }}</td>
-							<td>@if($item->payment_method == 'PayStack')  Online @endif</td>
+							<td>@if($item->payment_method == 'PayStack') Online @endif</td>
 							<td> <span class="badge rounded-pill bg-success"> {{ $item->status }}</span></td>
 
 							<td>
