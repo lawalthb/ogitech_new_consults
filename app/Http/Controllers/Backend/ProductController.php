@@ -19,7 +19,8 @@ class ProductController extends Controller
 {
     public function AllProduct()
     {
-        $products = Product::with('vendor')->latest()->get();
+        $term = $_GET['term'] ?? 'Second';
+        $products = Product::with('vendor')->where('term', $term )->latest()->get();
         //  dd($products);
         return view('backend.product.product_all', compact('products'));
     } // End Method
@@ -41,6 +42,29 @@ class ProductController extends Controller
     public function StoreProduct(Request $request)
     {
 
+        $request->validate([
+            'term' => 'required|in:First,Second',
+            'brand_id' => 'required|exists:brands,id',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'required|exists:subcategories,id',
+            'product_name' => 'required|string|max:255',
+            'product_code' => 'required|unique:products,product_code',
+            'product_qty' => 'required|integer|min:1',
+            'product_tags' => 'nullable|string|max:255',
+            'product_size' => 'nullable|string|max:255',
+            'product_color' => 'nullable|string|max:255',
+            'selling_price' => 'required|numeric|min:0',
+            'purchase_price' => 'required|numeric|min:0',
+            'short_descp' => 'nullable|string',
+            'unit' => 'required|string|max:50',
+            'hot_deals' => 'nullable|boolean',
+            'featured' => 'nullable|boolean',
+            'special_offer' => 'nullable|boolean',
+            'special_deals' => 'nullable|boolean',
+            'product_thambnail' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'vendor_id' => 'nullable|exists:vendors,id',
+        ]);
+
 
         $image = $request->file('product_thambnail');
         $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
@@ -49,6 +73,7 @@ class ProductController extends Controller
 
         $product_id = Product::insertGetId([
 
+            'term' => $request->term,
             'brand_id' => $request->brand_id,
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
@@ -78,25 +103,7 @@ class ProductController extends Controller
 
         ]);
 
-        // /// Multiple Image Upload From her //////
 
-        // $images = $request->file('multi_img');
-        // foreach ($images as $img) {
-        //     $make_name = hexdec(uniqid()) . '.' . $img->getClientOriginalExtension();
-        //     Image::make($img)->resize(800, 800)->save('upload/products/multi-image/' . $make_name);
-        //     $uploadPath = 'upload/products/multi-image/' . $make_name;
-
-
-        //     MultiImg::insert([
-
-        //         'product_id' => $product_id,
-        //         'photo_name' => $uploadPath,
-        //         'created_at' => Carbon::now(),
-
-        //     ]);
-        // } // end foreach
-
-        /// End Multiple Image Upload From her //////
 
         $notification = array(
             'message' => 'Product Inserted Successfully',

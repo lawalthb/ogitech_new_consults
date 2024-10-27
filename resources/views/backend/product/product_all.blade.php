@@ -23,6 +23,8 @@
 	<!--end breadcrumb-->
 
 	<hr />
+	<a href="/all/product?term=First"> [First Term] </a> | <a href="/all/product?term=Second"> [Second Term] </a>
+	<hr />
 	<div class="card">
 		<div class="card-body">
 			<div class="table-responsive">
@@ -36,6 +38,7 @@
 							<th>PurchasePrice </th>
 							<th>Unit </th>
 							<th>Vendor </th>
+							<th>Term </th>
 							<th>Status </th>
 							<th>Action</th>
 						</tr>
@@ -53,15 +56,15 @@
 							<td> @if($item->vendor_id == NULL)
 								Owner
 								@else
-							@if (isset($item['vendor']['name']))
-  {{ $item['vendor']['name'] }}
-@else
-  Deleted
-@endif
+								@if (isset($item['vendor']['name']))
+								{{ $item['vendor']['name'] }}
+								@else
+								Deleted
+								@endif
 
 								@endif
 							</td>
-
+							<td>{{ $item->term }}</td>
 
 
 							<td> @if($item->status == 1)
@@ -79,14 +82,14 @@
 								@if(Auth::user()->can('product.delete'))
 								<a href="{{ route('delete.product',$item->id) }}" class="btn btn-danger" id="delete" title="Delete Data"><i class="fa fa-trash"></i></a>
 								@endif
-								
-	@if(Auth::user()->can('product.delete'))
+
+								@if(Auth::user()->can('product.delete'))
 								@if($item->status == 1)
 								<a href="{{ route('product.inactive',$item->id) }}" class="btn btn-primary" title="Inactive"> <i class="fa-solid fa-thumbs-down"></i> </a>
 								@else
 								<a href="{{ route('product.active',$item->id) }}" class="btn btn-primary" title="Active"> <i class="fa-solid fa-thumbs-up"></i> </a>
 								@endif
-	@endif
+								@endif
 							</td>
 						</tr>
 						@endforeach
@@ -102,6 +105,7 @@
 							<th>PurchasePrice </th>
 							<th>Unit </th>
 							<th>Vendor </th>
+							<th>Term </th>
 							<th>Status </th>
 							<th>Action</th>
 						</tr>
