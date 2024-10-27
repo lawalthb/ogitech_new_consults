@@ -1,3 +1,7 @@
+@php
+$currentTerm = App\Models\CurrentTerm::where('id',1)->value('term');
+@endphp
+
 <header>
 	<div class="topbar d-flex align-items-center">
 		<nav class="navbar navbar-expand">
@@ -10,12 +14,44 @@
 				</div>
 			</div>
 			<div class="top-menu ms-auto">
+
 				<ul class="navbar-nav align-items-center">
 					<li class="nav-item mobile-search-icon">
+
 						<a class="nav-link" href="#"> <i class='bx bx-search'></i>
 						</a>
 					</li>
+					<li>Current Term:<select style="border-color: white;" id="termSelect" onchange="updateCurrentTerm(this.value)">
+							<option value="First" {{ $currentTerm === 'First' ? 'selected' : '' }}>First</option>
+							<option value="Second" {{ $currentTerm === 'Second' ? 'selected' : '' }}>Second</option>
+						</select>
 
+						<script>
+							function updateCurrentTerm(term) {
+								fetch('/update-current-term', {
+										method: 'POST',
+										headers: {
+											'Content-Type': 'application/json',
+											'X-CSRF-TOKEN': '{{ csrf_token() }}'
+										},
+										body: JSON.stringify({
+											term: term
+										})
+									})
+									.then(response => response.json())
+									.then(data => {
+										if (data.success) {
+											alert("Current term updated successfully.");
+										} else {
+											alert("Failed to update current term.");
+										}
+									})
+									.catch(error => console.error("Error:", error));
+							}
+						</script>
+
+
+					</li>
 					<li class="nav-item dropdown dropdown-large" id="notify">
 						<a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <span class="alert-count" id="countID">
 								@php

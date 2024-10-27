@@ -1,5 +1,9 @@
 @php
-$featured = App\Models\Product::where('featured',1)->orderBy('id','DESC')->limit(6)->get();
+
+$currentTerm = App\Models\CurrentTerm::where('id',1)->value('term');
+
+
+$featured = App\Models\Product::where('featured',1)->where('term', $currentTerm)->orderBy('id','DESC')->limit(6)->get();
 @endphp
 
 

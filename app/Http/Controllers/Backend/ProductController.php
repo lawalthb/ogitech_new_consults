@@ -14,6 +14,7 @@ use App\Models\Stock;
 use App\Models\User;
 use Image;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
@@ -486,4 +487,26 @@ class ProductController extends Controller
             "Content-Disposition" => "attachment; filename=product_template.csv",
         ]);
     }
+
+
+    public function updateCurrentTerm(Request $request)
+    {
+        // Validate that the term is either "First" or "Second"
+        $request->validate([
+            'term' => 'required|in:First,Second',
+        ]);
+
+        // Update the record with id=1 in the `current_term` table
+        $updated = DB::table('current_term')
+        ->where('id', 1)
+        ->update(['term' => $request->term]);
+
+        // Return a JSON response indicating success or failure
+        if ($updated) {
+            return response()->json(['success' => true, 'message' => 'Current term updated successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to update current term.']);
+        }
+    }
 }
+

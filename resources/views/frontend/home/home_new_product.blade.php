@@ -1,5 +1,7 @@
      @php
-     $products = App\Models\Product::where('status',1)->orderBy('id','ASC')->limit(10)->get();
+
+     $currentTerm = App\Models\CurrentTerm::where('id',1)->value('term');
+     $products = App\Models\Product::where('status',1)->where('term', $currentTerm)->orderBy('id','ASC')->limit(10)->get();
      $categories = App\Models\Category::inRandomOrder()->limit(4)->get();
      @endphp
 

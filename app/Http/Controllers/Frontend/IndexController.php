@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\MultiImg;
 use App\Models\Brand;
+use App\Models\CurrentTerm;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\OrderItem;
@@ -23,7 +24,7 @@ class IndexController extends Controller
       } else {
          $logged_in_user = 1;
       }
-    $randomNumber = mt_rand(1, 20);
+      $randomNumber = mt_rand(1, 20);
       $skip_category_0 = Category::where('id', $randomNumber)->first();
       $skip_product_0 = Product::where('status', 1)->where('category_id', $randomNumber)->orderBy('id', 'DESC')->limit(5)->get();
 
@@ -61,7 +62,7 @@ class IndexController extends Controller
 
 
 
-        return view('frontend.index', compact('skip_category_0', 'skip_product_0'));
+      return view('frontend.index', compact('skip_category_0', 'skip_product_0'));
    } // End Method
 
 
@@ -180,10 +181,12 @@ class IndexController extends Controller
    public function Products()
    {
 
-      $products = Product::all();
+      $currentTerm = CurrentTerm::where('id', 1)->value('term');
+      $products = Product::all()->where('term', $currentTerm);
+
       $categories = Category::orderBy('category_name', 'ASC')->get();
 
-      $newProduct = Product::orderBy('id', 'DESC')->limit(3)->get();
+      $newProduct = Product::orderBy('id', 'DESC')->where('term', $currentTerm)->limit(3)->get();
 
 
 
