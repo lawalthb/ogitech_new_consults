@@ -232,6 +232,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/product/inactive/{id}', 'ProductInactive')->name('product.inactive');
         Route::get('/product/active/{id}', 'ProductActive')->name('product.active');
         Route::get('/delete/product/{id}', 'ProductDelete')->name('delete.product');
+        Route::post('/products/bulk-upload', 'BulkUploadProducts')->name('products.bulk.upload');
+        Route::get('/product-template', [ProductController::class, 'downloadTemplate'])->name('product.template');
+
+
 
         // For Product Stock
         Route::get('/product/stock', 'ProductStock')->name('product.stock');

@@ -14,13 +14,16 @@ use App\Models\Stock;
 use App\Models\User;
 use Image;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     public function AllProduct()
     {
         $term = $_GET['term'] ?? 'Second';
-        $products = Product::with('vendor')->where('term', $term )->latest()->get();
+        $products = Product::with('vendor')->where('term', $term)->latest()->get();
         //  dd($products);
         return view('backend.product.product_all', compact('products'));
     } // End Method
@@ -331,4 +334,156 @@ class ProductController extends Controller
         return view('backend.product.bincard_admin', compact('stocks', 'product_name'));
     } // End Method
 
+
+
+    public function BulkUploadProducts(Request $request)
+    {
+        // Validate that the uploaded file is an Excel or CSV file
+        $request->validate([
+            'file' => 'required|file|mimes:csv,xlsx,xls',
+        ]);
+
+        // Load the file
+        $file = $request->file('file');
+
+        // Read the file as an array
+        $data = Excel::toArray([], $file);
+
+        // Get the last product ID and set the starting point for the product_code
+        $lastProductId = Product::max('id') ?? 0;
+        $productCodeCounter = $lastProductId + 1;
+        // Process each row
+        $errors = [];
+        foreach ($data[0] as $index => $row) {
+            // Skip header row
+            if ($index === 0) continue;
+
+            // Validate each row
+            $validator = Validator::make($row, [
+                'term' => 'required|in:First,Second',
+                'brand_id' => 'required|exists:brands,id',
+                'category_id' => 'required|exists:categories,id',
+                'subcategory_id' => 'required|exists:subcategories,id',
+                'product_name' => 'required|string|max:255',
+                'product_qty' => 'required|integer|min:1',
+                'product_tags' => 'nullable|string|max:255',
+                'product_size' => 'nullable|string|max:255',
+                'product_color' => 'nullable|string|max:255',
+                'selling_price' => 'required|numeric|min:0',
+                'purchase_price' => 'required|numeric|min:0',
+                'short_descp' => 'nullable|string',
+                'unit' => 'required|string|max:50',
+                'hot_deals' => 'nullable|boolean',
+                'featured' => 'nullable|boolean',
+                'special_offer' => 'nullable|boolean',
+                'special_deals' => 'nullable|boolean',
+                'vendor_id' => 'nullable|exists:vendors,id',
+            ]);
+
+            // If validation fails, store the error and skip the row
+            if ($validator->fails()) {
+                $errors[] = [
+                    'row' => $index + 1,
+                    'errors' => $validator->errors()->all(),
+                ];
+                continue;
+            }
+            // Generate the product code by incrementing and formatting the counter
+            $productCode = str_pad($productCodeCounter, 5, '0', STR_PAD_LEFT);
+            $productCodeCounter++; // Increment for the next row
+            // Insert the validated row into the database
+            try {
+
+                Product::create([
+                    'term' => $row['term'],
+                    'brand_id' => $row['brand_id'],
+                    'category_id' => $row['category_id'],
+                    'subcategory_id' => $row['subcategory_id'],
+                    'product_name' => $row['product_name'],
+                    'product_slug' => strtolower(str_replace(' ', '-', $row['product_name'])),
+                    'product_code' => $productCode,
+                    'product_qty' => $row['product_qty'],
+                    'product_tags' => $row['product_tags'],
+                    'product_size' => $row['product_size'],
+                    'product_color' => $row['product_color'],
+                    'unit' => $row['unit'],
+                    'selling_price' => $row['selling_price'],
+                    'purchase_price' => $row['purchase_price'],
+                    'short_descp' => $row['short_descp'],
+
+                    'hot_deals' => $row['hot_deals'] ?? 0,
+                    'featured' => $row['featured'] ?? 1,
+                    'special_offer' => $row['special_offer'] ?? 0,
+                    'special_deals' => $row['special_deals'] ?? 0,
+                    'vendor_id' => $row['vendor_id'],
+                    'status' => 1,
+                    'created_at' => Carbon::now(),
+                ]);
+            } catch (\Exception $e) {
+                // Log the row and the error
+                Log::error("Error on row {$index}: {$e->getMessage()}", [
+                    'row_data' => $row
+                ]);
+            }
+        }
+
+        // Return with a success message or error message if any rows failed
+        if (empty($errors)) {
+            $notification = [
+                'message' => 'Products uploaded successfully.',
+                'alert-type' => 'success',
+            ];
+        } else {
+
+            session()->flash('errors', $errors);
+
+
+            $notification = [
+                'message' => 'Some rows failed to upload. Please review the errors.',
+                'alert-type' => 'error',
+                'errors' => $errors,
+
+            ];
+            //dd($errors);
+        }
+
+        return redirect()->back()->with($notification);
+    }
+
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'term',
+            'brand_id',
+            'category_id',
+            'subcategory_id',
+            'product_name',
+            'product_code',
+            'product_qty',
+            'product_tags',
+            'product_size',
+            'product_color',
+            'selling_price',
+            'purchase_price',
+            'short_descp',
+            'unit',
+            'hot_deals',
+            'featured',
+            'special_offer',
+            'special_deals',
+            'vendor_id'
+        ];
+
+        $callback = function () use ($headers) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $headers);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=product_template.csv",
+        ]);
+    }
 }

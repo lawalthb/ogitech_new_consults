@@ -17,6 +17,7 @@
 		<div class="ms-auto">
 			<div class="btn-group">
 				<a href="{{ route('add.product') }}" class="btn btn-primary">Add Product</a>
+
 			</div>
 		</div>
 	</div>
@@ -24,6 +25,39 @@
 
 	<hr />
 	<a href="/all/product?term=First"> [First Term] </a> | <a href="/all/product?term=Second"> [Second Term] </a>
+	<div class="ms-auto">
+		<div class="btn-group">
+			@if (session()->has('errors'))
+			<div class="alert alert-danger">
+				<h4>Upload Errors</h4>
+				<ul>
+					@foreach (session('errors') as $error)
+					<li>
+						<strong>Row {{ $error['row'] }}:</strong>
+						<ul>
+							@foreach ($error['errors'] as $errorMessage)
+							<li>{{ $errorMessage }}</li>
+							@endforeach
+						</ul>
+					</li>
+					@endforeach
+				</ul>
+			</div>
+			@endif
+			<form action="{{ route('products.bulk.upload') }}" method="POST" enctype="multipart/form-data">
+				@csrf
+				<label for="file">Select CSV or Excel file for bulk upload:</label><br />
+				<input type="file" name="file" id="file" required>
+				<button class="btn btn-warning" type="submit">Upload</button>
+			</form>
+			<div class="card-body">
+
+				<a href="{{ route('product.template') }}" class="btn btn-secondary">
+					<i class="fa fa-download"></i> Download Template
+				</a>
+			</div>
+		</div>
+	</div>
 	<hr />
 	<div class="card">
 		<div class="card-body">
