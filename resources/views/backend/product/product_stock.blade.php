@@ -27,7 +27,8 @@
 				<table id="example" class="table table-striped table-bordered" style="width:100%">
 					<thead>
 						<tr>
-							<th>Sl</th>
+							<th>SN</th>
+							<th>BIN No. </th>
 							<th>Image </th>
 							<th>Product Name </th>
 							<th>Price </th>
@@ -40,6 +41,7 @@
 						@foreach($products as $key => $item)
 						<tr>
 							<td> {{ $key+1 }} </td>
+							<td>{{ $item->id }}</td>
 							<td> <img src="{{ asset($item->product_thambnail) }}" style="width: 70px; height:40px;"> </td>
 							<td>{{ $item->product_name }}</td>
 							<td>{{ $item->selling_price }}</td>
@@ -70,7 +72,8 @@
 					</tbody>
 					<tfoot>
 						<tr>
-							<th>Sl</th>
+							<th>SN</th>
+							<th>BIN No. </th>
 							<th>Image </th>
 							<th>Product Name </th>
 							<th>Price </th>

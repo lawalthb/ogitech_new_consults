@@ -214,6 +214,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/vendorproduct/ajax/{vendor_id}', 'GetVendorProduct');
 
         Route::post('/vendorproduct/ajax/', 'StoreStock')->name('store.add.stock');
+        Route::get('/vendorproduct/remove/{id}', 'removeStoreStock')->name('remove.stock');
     });
 
 

@@ -34,6 +34,7 @@
               <th>QTY In </th>
               <th>QTY Out </th>
               <th>Balance </th>
+              <th>Action </th>
               <th>Remark </th>
             </tr>
           </thead>
@@ -48,7 +49,13 @@
               <td>{{ $stock->item_out }}</td>
 
               <td>{{ $stock->item_balance }}</td>
-
+              <td>
+                @if ($stock->id != 1)
+                <a href="{{ route('remove.stock', ['id' => $stock->id]) }}">{{ $stock->id }}</a>
+                @else
+                {{ $stock->id }}
+                @endif
+              </td>
 
 
               <td> </td>
@@ -68,6 +75,7 @@
               <th>QTY In </th>
               <th>QTY Out </th>
               <th>Balance </th>
+              <th>Action </th>
               <th>Remark </th>
             </tr>
           </tfoot>

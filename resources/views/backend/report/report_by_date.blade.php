@@ -1,6 +1,7 @@
 @extends('admin.admin_dashboard')
 @section('admin')
-
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.1/css/buttons.dataTables.min.css">
 <div class="page-content">
 	<!--breadcrumb-->
 	<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -58,7 +59,7 @@
 								$no = 1;
 								foreach ($orderItem as $ord_items) {
 
-									echo  $no++ .')'. $ord_items->product->product_name . '( <b>' . $ord_items->product->vendor->name . '</b>)<br />';
+									echo  $no++ . ')' . $ord_items->product->product_name . '( <b>' . $ord_items->product->vendor->name . '</b>)<br />';
 								}
 
 
@@ -92,6 +93,34 @@
 						</tr>
 					</tfoot>
 				</table>
+				<!-- jQuery and DataTables JS -->
+				<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+				<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+				<script src="https://cdn.datatables.net/buttons/2.3.1/js/dataTables.buttons.min.js"></script>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+				<script src="https://cdn.datatables.net/buttons/2.3.1/js/buttons.html5.min.js"></script>
+				<script src="https://cdn.datatables.net/buttons/2.3.1/js/buttons.print.min.js"></script>
+
+				<script>
+					$(document).ready(function() {
+						$('#example').DataTable({
+							dom: 'Bfrtip', // Add button elements
+							buttons: [{
+									extend: 'excelHtml5',
+									title: 'Order Data By Date',
+									text: 'Export to Excel'
+								},
+								{
+									extend: 'pdfHtml5',
+									title: 'Order Data by Date',
+									text: 'Export to PDF',
+									orientation: 'landscape',
+									pageSize: 'A4'
+								}
+							]
+						});
+					});
+				</script>
 			</div>
 		</div>
 	</div>

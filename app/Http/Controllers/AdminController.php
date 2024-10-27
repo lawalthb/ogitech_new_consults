@@ -345,14 +345,23 @@ class AdminController extends Controller
         return $product->product_qty;
     }
 
+    public function removeFromExistingStock($productId, $newStock)
+    {
+        // Retrieve the product by its ID
+        $product = Product::findOrFail($productId);
+
+        // decrement the quantity column by the new stock amount
+        $product->decrement('product_qty', $newStock);
+
+        // Optionally, return the updated product
+        return $product->product_qty;
+    }
+
 
 
 
     public function StoreStock(Request $request)
     {
-
-        $new_product_qty = $this->addToExistingStock($request->product_id, $request->qty);
-
 
         $request->validate([
             'vendor_id' => ['required'],
@@ -362,49 +371,87 @@ class AdminController extends Controller
             'qty' => ['required'],
         ]);
 
+        try {
+            DB::beginTransaction();  // Start the transaction
+            $new_product_qty = $this->addToExistingStock($request->product_id, $request->qty);
 
-        // $sql = "INSERT INTO stocks ( 'item_id',  'amount', 'item_out',   'item_in' ,   'item_balance',  'user_type' ) VALUES (?, ?, ?, ?, ?,?)";
+            $last_id = Stock::insertGetId([
+                'item_id' => $request->product_id,
+                'amount' => $request->amount,
+                'item_out' => 0,
+                'item_in' => $request->qty,
+                'item_balance' => $new_product_qty,
+                'user_id' => $request->vendor_id,
+                'user_type' => 'Vendor',
+            ]);
 
-        // // Execute the query with the provided parameters
-        // DB::insert($sql, [$request->product_id, $request->amount, 0, $request->qty, $new_product_qty, 'Vendor',]);
+            Statement::insert([
+                'user_id' => $request->vendor_id,
+                'amount_in' => $request->amount,
+                'amount_out' => 0.00,
+                'reason' => 'stock',
+                'trans_id' => $last_id,
+                'comment' => $request->comment,
+            ]);
 
-        // // Optionally, return the ID of the inserted record
-        // $last_id = DB::getPdo()->lastInsertId();
+            DB::commit();  // Commit the transaction if everything went well
 
-        $last_id = Stock::insert([
-            //	id	user_id	mat_no	item_id	user_type	item_in	item_out	item_balance	amount	reg_date	status
-            'item_id' => $request->product_id,
+            $notification = array(
+                'message' => 'Stock Added Successfully',
+                'alert-type' => 'success'
+            );
 
-            'amount' => $request->amount,
-            'item_out' => 0,
-            'item_in' => $request->qty,
-            'item_balance' => $new_product_qty,
-            'user_id' =>  $request->vendor_id,
-            'user_type' => 'Vendor',
+            return redirect()->route('product.stock')->with($notification);
+        } catch (\Exception $e) {
+            DB::rollBack();  // Roll back the transaction if there's an error
 
-
-        ]);
-        // dd($last_id);
-
-        Statement::insert([
-            'user_id' => $request->vendor_id,
-            'amount_in' => $request->amount,
-            'amount_out' => 0.00,
-            'reason' => 'stock',
-            'trans_id' => $last_id,
-            'comment' => $request->comment,
-
-        ]);
-
-        $notification = array(
-            'message' => 'Stock Added Successfully',
-            'alert-type' => 'success'
-        );
-
-        return redirect()->route('product.stock')->with($notification);
-    } // End Mehtod
+            // Optionally log the error or handle it as needed
+            return redirect()->back()->withErrors(['error' => 'An error occurred while adding stock. Please try again.']);
+        }
+    }
 
 
 
+    public function removeStoreStock($stockId)
+    {
 
+        try {
+            // Start transaction
+            DB::beginTransaction();
+
+            // Find the stock entry by its ID
+            $stock = Stock::find($stockId);
+            if (!$stock) {
+                return redirect()->back()->withErrors(['error' => 'Stock record not found.']);
+            }
+
+            // Get the corresponding statement entry using the stock ID (trans_id)
+            $statement = Statement::where('trans_id', $stockId)->first();
+            if (!$statement) {
+                return redirect()->back()->withErrors(['error' => 'No statement found for the given stock record.']);
+            }
+            $new_product_qty = $this->removeFromExistingStock($stock->item_id, $stock->item_in);
+            // Delete the statement record first to avoid orphaned records
+            $statement->delete();
+
+            // Delete the stock record
+            $stock->delete();
+
+            // Commit transaction
+            DB::commit();
+
+            // Return a success notification
+            $notification = array(
+                'message' => 'Stock entry and corresponding statement deleted successfully.',
+                'alert-type' => 'success'
+            );
+
+            return redirect()->route('product.stock')->with($notification);
+        } catch (\Exception $e) {
+            // Rollback transaction if there's an error
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while undoing the stock entry.']);
+        }
+    }
 }
