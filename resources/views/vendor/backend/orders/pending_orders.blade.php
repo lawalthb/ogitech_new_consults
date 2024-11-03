@@ -10,9 +10,14 @@
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Vendor Pending Order</li>
+                    <li class="breadcrumb-item active" aria-current="page">Vendor Pending Order </li>
+
+                    <li class="breadcrumb-item active" aria-current="page">Total Amount: ₦{{number_format($totalAmount,2)}}</li>
+
+
                 </ol>
             </nav>
+
         </div>
         <div class="ms-auto">
             <div class="btn-group">
@@ -44,14 +49,14 @@
                         @foreach($orderitem as $key => $item)
                         <tr>
                             <td> {{ $key+1 }} </td>
-                            <td>{{ $item['order']['order_date'] }}</td>
-                            <td>{{ $item['order']['invoice_no'] }}</td>
-                            <td>₦{{ $item['order']['amount'] }}</td>
-                            <td>{{ $item['order']['payment_method'] }}</td>
-                            <td> <span class="badge rounded-pill bg-success"> {{ $item['order']['status'] }}</span></td>
+                            <td>{{ $item['order_date'] }}</td>
+                            <td>{{ $item['invoice_no'] }}</td>
+                            <td>₦{{ $item['amount'] }}</td>
+                            <td>{{ $item['payment_method'] }}</td>
+                            <td> <span class="badge rounded-pill bg-success"> {{ $item['status'] }}</span></td>
 
                             <td>
-                                <a href="{{ route('vendor.order.details',$item->order->id) }}" class="btn btn-info" title="Details"><i class="fa fa-eye"></i> </a>
+                                <a href="{{ route('vendor.order.details',$item->id) }}" class="btn btn-info" title="Details"><i class="fa fa-eye"></i> </a>
 
 
                             </td>

@@ -22,19 +22,26 @@ class VendorOrderController extends Controller
         $id = Auth::user()->id;
 
         // Fetch OrderItems with related Order data where Order's status is confirmed and vendor_id matches
-        $orderitem  = OrderItem::with(['order' => function ($query) {
-            $query->where('status', 'confirm'); // Assuming 'confirmed' is a boolean or integer column
-        }])
-        ->where('vendor_id', $id)
-        ->orderBy('id', 'DESC')
-        ->get();
+        $orderitem
+        =
+        $orderitem = Order::join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->where('order_items.vendor_id', $id)
+        ->where('orders.status', $status)
+        ->select('orders.*', DB::raw('SUM(order_items.price) as total_amount'))
+            ->groupBy('orders.id')  // Group by order ID to get total per order
+            ->orderBy('orders.id', 'DESC')
+            ->get();
 
+        $totalAmount = Order::join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->where('order_items.vendor_id', $id)
+        ->where('orders.status', $status)
+        ->sum(DB::raw('order_items.price * order_items.qty'));
 
                 Log::info("Successfully created product for row ", [
                     'product_id' => $id,
                     'queries' => DB::getQueryLog()
                 ]);
-        return view('vendor.backend.orders.pending_orders', compact('orderitem'));
+        return view('vendor.backend.orders.pending_orders', compact('orderitem', 'totalAmount'));
     }
 
     public function VendorReturnOrder(){
