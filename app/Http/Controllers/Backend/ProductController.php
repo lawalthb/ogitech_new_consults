@@ -339,140 +339,142 @@ class ProductController extends Controller
 
     public function BulkUploadProducts(Request $request)
     {
-        // Validate that the uploaded file is an Excel or CSV file
+        // Enable query logging at the start
+        DB::enableQueryLog();
+
         $request->validate([
             'file' => 'required|file|mimes:csv,xlsx,xls',
         ]);
 
-        // Load the file
         $file = $request->file('file');
-
-        // Read the file as an array
         $data = Excel::toArray([], $file);
 
-        // Get the last product ID and set the starting point for the product_code
+        Log::info('Excel Headers and First Row', [
+            'headers' => $data[0][0] ?? 'No headers',
+            'first_row' => $data[0][1] ?? 'No data'
+        ]);
+
         $lastProductId = Product::max('id') ?? 0;
         $productCodeCounter = $lastProductId + 1;
-        // Process each row
         $errors = [];
+
         foreach ($data[0] as $index => $row) {
-            // Skip header row
             if ($index === 0) continue;
 
-            // Validate each row
-            $validator = Validator::make($row, [
-                'term' => 'required|in:First,Second',
-                'brand_id' => 'required|exists:brands,id',
-                'category_id' => 'required|exists:categories,id',
-                'subcategory_id' => 'required|exists:subcategories,id',
-                'product_name' => 'required|string|max:255',
-                'product_qty' => 'required|integer|min:1',
-                'product_tags' => 'nullable|string|max:255',
-                'product_size' => 'nullable|string|max:255',
-                'product_color' => 'nullable|string|max:255',
-                'selling_price' => 'required|numeric|min:0',
-                'purchase_price' => 'required|numeric|min:0',
-                'short_descp' => 'nullable|string',
-                'unit' => 'required|string|max:50',
-                'hot_deals' => 'nullable|boolean',
-                'featured' => 'nullable|boolean',
-                'special_offer' => 'nullable|boolean',
-                'special_deals' => 'nullable|boolean',
-                'vendor_id' => 'nullable|exists:vendors,id',
+            // Clear the query log for each iteration
+            DB::flushQueryLog();
+
+            // Log the current row being processed
+            Log::info("Processing row {$index}", ['row_data' => $row]);
+
+            $validator = Validator::make([
+                'term' => $row[0],
+                'brand_id' => $row[1],
+                'category_id' => $row[2],
+                'subcategory_id' => $row[3],
+                'product_name' => "$row[4]",
+                'product_slug' => strtolower(str_replace(' ', '-', $row[4])),
+                'product_code' => $productCodeCounter,
+                'product_tags' => $row[5],
+                'product_size' => $row[6],
+                'unit' => $row[7],
+                'selling_price' => $row[8],
+                'purchase_price' => $row[9],
+                'short_descp' => $row[10],
+                'vendor_id' => $row[11] ?? null,
+            ], [
+                // Your validation rules here...
             ]);
 
-            // If validation fails, store the error and skip the row
             if ($validator->fails()) {
+                Log::warning("Validation failed for row {$index}", [
+                    'row_data' => $row,
+                    'validation_errors' => $validator->errors()->toArray()
+                ]);
+
                 $errors[] = [
                     'row' => $index + 1,
                     'errors' => $validator->errors()->all(),
                 ];
                 continue;
             }
-            // Generate the product code by incrementing and formatting the counter
-            $productCode = str_pad($productCodeCounter, 5, '0', STR_PAD_LEFT);
-            $productCodeCounter++; // Increment for the next row
-            // Insert the validated row into the database
+
             try {
+                $productCode = str_pad($productCodeCounter, 5, '0', STR_PAD_LEFT);
+                $productCodeCounter++;
 
-                Product::create([
-                    'term' => $row['term'],
-                    'brand_id' => $row['brand_id'],
-                    'category_id' => $row['category_id'],
-                    'subcategory_id' => $row['subcategory_id'],
-                    'product_name' => $row['product_name'],
-                    'product_slug' => strtolower(str_replace(' ', '-', $row['product_name'])),
+                $product = Product::create([
+                    'term' => $row[0],
+                    'brand_id' => $row[1],
+                    'category_id' => $row[2],
+                    'subcategory_id' => $row[3],
+                    'product_name' => $row[4],
+                    'product_slug' => strtolower(str_replace(' ', '-', $row[4])),
                     'product_code' => $productCode,
-                    'product_qty' => $row['product_qty'],
-                    'product_tags' => $row['product_tags'],
-                    'product_size' => $row['product_size'],
-                    'product_color' => $row['product_color'],
-                    'unit' => $row['unit'],
-                    'selling_price' => $row['selling_price'],
-                    'purchase_price' => $row['purchase_price'],
-                    'short_descp' => $row['short_descp'],
-
-                    'hot_deals' => $row['hot_deals'] ?? 0,
-                    'featured' => $row['featured'] ?? 1,
-                    'special_offer' => $row['special_offer'] ?? 0,
-                    'special_deals' => $row['special_deals'] ?? 0,
-                    'vendor_id' => $row['vendor_id'],
+                    'product_tags' => $row[5],
+                    'product_size' => $row[6],
+                    'unit' => $row[7],
+                    'selling_price' => $row[8],
+                    'purchase_price' => $row[9],
+                    'short_descp' => $row[10],
+                    'vendor_id' => $row[11],
                     'status' => 1,
                     'created_at' => Carbon::now(),
                 ]);
-            } catch (\Exception $e) {
-                // Log the row and the error
-                Log::error("Error on row {$index}: {$e->getMessage()}", [
-                    'row_data' => $row
+
+                // Log successful creation and the queries that were executed
+                Log::info("Successfully created product for row {$index}", [
+                    'product_id' => $product->id,
+                    'queries' => DB::getQueryLog()
                 ]);
+            } catch (\Exception $e) {
+                Log::error("Error processing row {$index}", [
+                    'row_data' => $row,
+                    'error_message' => $e->getMessage(),
+                    'queries' => DB::getQueryLog(),
+                    'stack_trace' => $e->getTraceAsString()
+                ]);
+
+                $errors[] = [
+                    'row' => $index + 1,
+                    'errors' => [$e->getMessage()]
+                ];
             }
         }
 
-        // Return with a success message or error message if any rows failed
         if (empty($errors)) {
             $notification = [
                 'message' => 'Products uploaded successfully.',
                 'alert-type' => 'success',
             ];
         } else {
-
             session()->flash('errors', $errors);
-
-
             $notification = [
                 'message' => 'Some rows failed to upload. Please review the errors.',
                 'alert-type' => 'error',
                 'errors' => $errors,
-
             ];
-            //dd($errors);
         }
 
         return redirect()->back()->with($notification);
     }
 
 
+
     public function downloadTemplate()
     {
         $headers = [
             'term',
-            'brand_id',
-            'category_id',
-            'subcategory_id',
+            'book_type', //brand_id
+            'department_id', // category_id id
+            'level_id', //subcategory_id
             'product_name',
-            'product_code',
-            'product_qty',
             'product_tags',
             'product_size',
-            'product_color',
+            'unit',
             'selling_price',
             'purchase_price',
             'short_descp',
-            'unit',
-            'hot_deals',
-            'featured',
-            'special_offer',
-            'special_deals',
             'vendor_id'
         ];
 
@@ -498,15 +500,14 @@ class ProductController extends Controller
 
         // Update the record with id=1 in the `current_term` table
         $updated = DB::table('current_term')
-        ->where('id', 1)
-        ->update(['term' => $request->term]);
+            ->where('id', 1)
+            ->update(['term' => $request->term]);
 
         // Return a JSON response indicating success or failure
         if ($updated) {
-            return response()->json(['success' => true, 'message' => 'Current term updated successfully.']);
+            return response()->json(['success' => true, 'message' => 'Current semester updated successfully.']);
         } else {
-            return response()->json(['success' => false, 'message' => 'Failed to update current term.']);
+            return response()->json(['success' => false, 'message' => 'Failed to update current semester.']);
         }
     }
 }
-
