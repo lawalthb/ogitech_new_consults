@@ -72,6 +72,12 @@ $route = Route::current()->getName();
                 <a class="nav-link {{ ($route ==  'user.order.page')? 'active':  '' }}" href="{{ route('user.order.page') }}#{{$mobile }}"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link {{ ($route ==  'user.order.pending.page')? 'active':  '' }}"
+                    href="{{ route('user.order.pending.page') }}#{{$mobile }}">
+                    <i class="fi-rs-shopping-bag mr-10"></i>Pending Orders</a>
+            </li>
+
             @if (auth()->user()->is_hoc == "Yes")
 
             <li class="nav-item">

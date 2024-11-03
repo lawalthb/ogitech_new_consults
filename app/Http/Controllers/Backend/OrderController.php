@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Statement;
+use App\Models\Stock;
 use App\Models\User;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Session;
@@ -15,6 +16,7 @@ use Carbon\Carbon;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class OrderController extends Controller
 {
@@ -31,7 +33,7 @@ class OrderController extends Controller
         $order = Order::with('category', 'subcat', 'state', 'user')->where('id', $order_id)->first();
         $orderItem = OrderItem::with('product')->where('order_id', $order_id)->orderBy('id', 'DESC')->get();
 
-//dd( $orderItem);
+        //dd( $orderItem);
         return view('backend.orders.admin_order_details', compact('order', 'orderItem'));
     } // End Method
 
@@ -96,7 +98,11 @@ class OrderController extends Controller
 
     public function PendingToConfirm($order_id)
     {
-        Order::findOrFail($order_id)->update(['status' => 'confirm']);
+        Order::findOrFail($order_id)->update([
+            'status' => 'confirm',
+            'confirmed_by' => auth()->user()->id,
+
+        ]);
 
         $notification = array(
             'message' => 'Order Confirm Successfully',
@@ -118,17 +124,45 @@ class OrderController extends Controller
         return redirect()->route('admin.processing.order')->with($notification);
     } // End Method
 
+    public function removeFromExistingStock($productId, $newStock)
+    {
+        // Retrieve the product by its ID
+        $product = Product::findOrFail($productId);
+
+        // decrement the quantity column by the new stock amount
+        $product->decrement('product_qty', $newStock);
+
+        // Optionally, return the updated product
+        return $product->product_qty;
+    }
+
 
     public function ProcessToDelivered($order_id)
     {
 
         $product = OrderItem::where('order_id', $order_id)->get();
+
         foreach ($product as $item) {
-            Product::where('id', $item->product_id)
-                ->update(['product_qty' => DB::raw('product_qty-' . $item->qty)]);
+
+            //Product::where('id', $item->product_id)->update(['product_qty' => FacadesDB::raw('product_qty-' . $item->qty)]);
+            //dd($item->id);
+
+            $new_product_qty = $this->removeFromExistingStock($item->product_id, $item->qty);
+
+            $last_id = Stock::insertGetId([
+                'item_id' => $item->product_id,
+                'amount' => $item->price,
+                'item_out' => $item->qty,
+                'item_in' => 0,
+                'item_balance' => $new_product_qty,
+                'user_id' => $item->vendor_id,
+                'user_type' => 'Student',
+            ]);
         }
 
-        Order::findOrFail($order_id)->update(['status' => 'deliverd']);
+        Order::findOrFail($order_id)->update(['status' =>'deliverd',
+            'delivered_by' => auth()->user()->id,
+        ]);
 
         $notification = array(
             'message' => 'Order Deliverd Successfully',
@@ -227,12 +261,12 @@ class OrderController extends Controller
 
 
 
-            Statement::findOrFail($id)->delete();
+        Statement::findOrFail($id)->delete();
 
-            $notification = array(
-                'message' => 'Income Deleted Successfully',
-                'alert-type' => 'success'
-            );
+        $notification = array(
+            'message' => 'Income Deleted Successfully',
+            'alert-type' => 'success'
+        );
 
 
 

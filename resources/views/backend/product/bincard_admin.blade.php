@@ -51,8 +51,9 @@
               <td>{{ $stock->item_balance }}</td>
               <td>
                 @if ($stock->id != 1)
-                <a href="{{ route('remove.stock', ['id' => $stock->id]) }}">{{ $stock->id }}</a>
+                <a href="{{ route('remove.stock', ['id' => $stock->id]) }}">[Remove]</a>
                 @else
+
                 {{ $stock->id }}
                 @endif
               </td>

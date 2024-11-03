@@ -10,16 +10,32 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class VendorOrderController extends Controller
 {
-    public function VendorOrder(){
-
+    public function VendorOrder()
+    {
+        DB::enableQueryLog();
+        $status = $_GET['status'] ?? 'confirm';  // default to 'confirmed'
         $id = Auth::user()->id;
-        $orderitem = OrderItem::with('order')->where('vendor_id',$id)->orderBy('id','DESC')->get();
-        return view('vendor.backend.orders.pending_orders',compact('orderitem'));
-    } // End Method
 
+        // Fetch OrderItems with related Order data where Order's status is confirmed and vendor_id matches
+        $orderitem  = OrderItem::with(['order' => function ($query) {
+            $query->where('status', 'confirm'); // Assuming 'confirmed' is a boolean or integer column
+        }])
+        ->where('vendor_id', $id)
+        ->orderBy('id', 'DESC')
+        ->get();
+
+
+                Log::info("Successfully created product for row ", [
+                    'product_id' => $id,
+                    'queries' => DB::getQueryLog()
+                ]);
+        return view('vendor.backend.orders.pending_orders', compact('orderitem'));
+    }
 
     public function VendorReturnOrder(){
 

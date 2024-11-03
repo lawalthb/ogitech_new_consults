@@ -34,7 +34,15 @@ class AllUserController extends Controller
     public function UserOrderPage()
     {
         $id = Auth::user()->id;
-        $orders = Order::where('user_id', $id)->orderBy('id', 'DESC')->get();
+        $orders = Order::where('user_id', $id)->where('status', '!=', 'pending')->orderBy('id', 'DESC')->get();
+        return view('frontend.userdashboard.user_order_page', compact('orders'));
+    } // End Method
+
+
+    public function UserPendingOrderPage()
+    {
+        $id = Auth::user()->id;
+        $orders = Order::where('user_id', $id)->where('status',  'pending')->orderBy('id', 'DESC')->get();
         return view('frontend.userdashboard.user_order_page', compact('orders'));
     } // End Method
 
