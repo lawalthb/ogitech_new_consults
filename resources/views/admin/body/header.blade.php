@@ -21,7 +21,7 @@ $currentTerm = App\Models\CurrentTerm::where('id',1)->value('term');
 						<a class="nav-link" href="#"> <i class='bx bx-search'></i>
 						</a>
 					</li>
-					<li>Current Term:<select style="border-color: white;" id="termSelect" onchange="updateCurrentTerm(this.value)">
+					<li>Current Semester:<select style="border-color: white;" id="termSelect" onchange="updateCurrentTerm(this.value)">
 							<option value="First" {{ $currentTerm === 'First' ? 'selected' : '' }}>First</option>
 							<option value="Second" {{ $currentTerm === 'Second' ? 'selected' : '' }}>Second</option>
 						</select>
@@ -41,9 +41,9 @@ $currentTerm = App\Models\CurrentTerm::where('id',1)->value('term');
 									.then(response => response.json())
 									.then(data => {
 										if (data.success) {
-											alert("Current term updated successfully.");
+											alert("Current semester updated successfully.");
 										} else {
-											alert("Failed to update current term.");
+											alert("Failed to update current semester.");
 										}
 									})
 									.catch(error => console.error("Error:", error));

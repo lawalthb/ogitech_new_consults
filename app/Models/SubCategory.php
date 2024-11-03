@@ -10,6 +10,13 @@ class SubCategory extends Model
     use HasFactory;
     protected $guarded = [];
 
+    // public function category()
+    // {
+    //     return $this->belongsTo(Category::class, 'category_id', 'id');
+    // }
+
+
+    // Each SubCategory belongs to one Category
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');

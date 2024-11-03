@@ -24,7 +24,7 @@
 	<!--end breadcrumb-->
 
 	<hr />
-	<a href="/all/product?term=First"> [First Term] </a> | <a href="/all/product?term=Second"> [Second Term] </a>
+	<a href="/all/product?term=First"> [First Semester] </a> | <a href="/all/product?term=Second"> [Second Semester] </a>
 	<div class="ms-auto">
 		<div class="btn-group">
 			@if (session()->has('errors'))

@@ -12,8 +12,8 @@ class SubCategoryController extends Controller
 {
     public function AllSubCategory()
     {
-        $subcategories = SubCategory::with('category')->latest()->get();
-      //dd($subcategories);
+        $subcategories = SubCategory::whereHas('category')->with('category')->latest()->get();
+   //   dd($subcategories);
         return view('backend.subcategory.subcategory_all', compact('subcategories'));
     } // End Method
 
