@@ -361,6 +361,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/report/online_payment', 'ReportOnline')->name('report.online.payment');
         Route::any('/search/by/date', 'SearchByDate')->name('search-by-date');
         Route::any('/search/by/month', 'SearchByMonth')->name('search-by-month');
+
+
+        Route::any('/search/by/pending', 'SearchByPending')->name('search-by-pending');
+
+
         Route::any('/search/by/year', 'SearchByYear')->name('search-by-year');
 
         Route::post('/search_payment/by/date', 'SearchByDatePayment')->name('search_payment-by-date');
@@ -642,7 +647,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
         Route::get('/user/order/pending/page', 'UserPendingOrderPage')
         ->name('user.order.pending.page');
-    
+
         Route::get('/user/order/hoc_collection', 'UserOrderCollection')->name('user.collection.page');
         Route::get('/user/order_given/{order_id}', 'UserOrderGiven');
 

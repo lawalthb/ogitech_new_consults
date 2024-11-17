@@ -44,10 +44,10 @@
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->brand_name }}</td>
                             <td>
-                                @if(Auth::user()->can('brand.edit'))
+                                @if(Auth::user()->id == 1)
                                 <a href="{{ route('edit.brand',$item->id) }}" class="btn btn-info">Edit</a>
                                 @endif
-                                @if(Auth::user()->can('brand.delete'))
+                                @if(Auth::user()->id == 1)
                                 <a href="{{ route('delete.brand',$item->id) }}" class="btn btn-danger" id="delete">Delete</a>
                                 @endif
                             </td>

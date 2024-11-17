@@ -92,6 +92,32 @@ $status = $_GET['status'] ?? 'confirm';
     } // End Method
 
 
+    public function SearchByPending(Request $request)
+    {
+
+        $month = $request->month;
+        $status = $_GET['status'] ?? 'pending';
+        $year = $request->year_name;
+        if ($year == "Open this select Year") {
+
+            return "Please select Year";
+        } else if ($year == "") {
+
+            $month = $request->month ?? Carbon::now()->format('F');
+            $year = $request->year_name ?? Carbon::now()->format('Y');
+        }
+
+        $orders = Order::where('order_month', $month)->where('order_year', $year)->where('status', $status)->latest()->get();
+
+        // Calculate the sum of the 'amount' column
+        $totalAmount = $orders->sum('amount');
+
+
+        return view('backend.report.report_by_pending', compact('orders', 'month', 'year', 'totalAmount'));
+    } // End Method
+
+
+
     public function SearchByYear(Request $request)
     {
 

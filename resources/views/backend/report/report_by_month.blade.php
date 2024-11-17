@@ -58,7 +58,7 @@
 								$no = 1;
 								foreach ($orderItem as $ord_items) {
 
-									echo  $no++ . ')' . $ord_items->product->product_name . '( <b>' . $ord_items->product->vendor->name . '</b>)<br />';
+									echo  $no++ . ') ' .  $ord_items->qty . 'qty of ' . $ord_items->product->product_name . '( <b>' . $ord_items->product->vendor->name . '</b>)<br />';
 								}
 
 
