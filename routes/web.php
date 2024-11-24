@@ -371,6 +371,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/search_payment/by/date', 'SearchByDatePayment')->name('search_payment-by-date');
         Route::post('/search_payment/by/month', 'SearchByMonthPayment')->name('search_payment-by-month');
         Route::post('/search_payment/by/year', 'SearchByYearPayment')->name('search_payment-by-year');
+        Route::get('/all_payment', 'AllPayment')->name('all_payment');
 
 
         Route::post('/search_profit/by/date', 'SearchByDateProfit')->name('search_profit-by-date');

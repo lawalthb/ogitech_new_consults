@@ -365,7 +365,8 @@
         <ul>
             <li> <a href="{{ route('report.view') }}"><i class="bx bx-right-arrow-alt"></i>Order Report</a>
             </li>
-
+            <li> <a href="{{ route('all_payment') }}"><i class="bx bx-right-arrow-alt"></i>All payment</a>
+            </li>
             <li> <a href="{{ route('report.online.payment') }}"><i class="bx bx-right-arrow-alt"></i>Online payment</a>
             </li>
 

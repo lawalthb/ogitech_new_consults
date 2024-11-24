@@ -202,4 +202,14 @@ $status = $_GET['status'] ?? 'confirm';
         $sumAmount = Order::where('order_year', $year)->latest()->where('status', '!=', 'pending')->sum('amount');
         return view('backend.report.payment_report_by_year', compact('orders', 'year', 'sumAmount'));
     } // End Method
+
+    public function AllPayment(Request $request)
+    {
+
+       // payment
+$year ="ALL";
+        $orders = Order::where('status', '!=', 'pending')->latest()->get();
+        $sumAmount = Order::where('status', '!=', 'pending')->latest()->sum('amount');
+        return view('backend.report.all_payment', compact('orders', 'year', 'sumAmount'));
+    } // End Method
 }
