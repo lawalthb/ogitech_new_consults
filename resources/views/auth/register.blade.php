@@ -73,9 +73,7 @@
                                                 <input type="text" id="phone" name="phone" placeholder="Phone (optional)" />
                                             </div>
 
-                                            <div class="form-group">
-                                                <input type="text" required id="matno" name="matno" placeholder="Matric Number " />
-                                            </div>
+
 
                                             <div class="form-group">
                                                 <select name="vendor_department" class="form-select mb-3" aria-label="Default select example">
@@ -91,7 +89,7 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <select name="level" class="form-select mb-3" aria-label="Default select example">
+                                                <select name="level" id="level" class="form-select mb-3" aria-label="Default select example">
                                                     <option selected="">Open this to select Level</option>
 
 
@@ -110,6 +108,11 @@
 
                                                 </select>
                                             </div>
+
+                                            <div class="form-group">
+                                                <input type="text" required id="matno" name="matno" placeholder="Matric Number is optional for ND1 and HND1 for now " />
+                                            </div>
+
 
                                             <div class="login_footer form-group mb-50">
                                                 <div class="chek-form">
@@ -140,6 +143,16 @@
         </div>
     </main>
 
+    <script>
+        document.getElementById('level').addEventListener('change', function() {
+            const matnoField = document.getElementById('matno');
+            if (this.value === 'ND1' || this.value === 'HND1') {
+                matnoField.removeAttribute('required');
+            } else {
+                matnoField.setAttribute('required', '');
+            }
+        });
+    </script>
 
     @include('frontend.body.footer')
 
