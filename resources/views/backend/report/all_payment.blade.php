@@ -45,7 +45,7 @@
                         @foreach($orders as $key => $item)
                         <tr>
                             <td> {{ $key+1 }} </td>
-                            <td> {{ Carbon\Carbon::parse ($item->paid_at)->format('Y-m-d')}}</td>
+                            <td> {{ ($item->created_at)}}</td>
                             <td>{{ $item->user->name }}</td>
                             <td>{{ $item->user->email }}</td>
                             <td>{{ $item->invoice_no }}</td>
