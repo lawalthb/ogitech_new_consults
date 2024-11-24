@@ -69,6 +69,12 @@ $route = Route::current()->getName();
                 <a class="nav-link {{ ($route ==  'dashboard')? 'active':  '' }} " href="{{ route('dashboard') }}"><i class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ ($route ==  'products')? 'active':  '' }}"
+                    href="{{ route('products') }}#{{$mobile }}">
+                    <i class="fi-rs-marker mr-10"></i>Shop</a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link {{ ($route ==  'user.order.page')? 'active':  '' }}" href="{{ route('user.order.page') }}#{{$mobile }}"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
             </li>
 

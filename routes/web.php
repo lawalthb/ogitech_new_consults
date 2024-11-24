@@ -646,7 +646,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         Route::get('/user/order/page', 'UserOrderPage')->name('user.order.page');
 
         Route::get('/user/order/pending/page', 'UserPendingOrderPage')
-        ->name('user.order.pending.page');
+            ->name('user.order.pending.page');
 
         Route::get('/user/order/hoc_collection', 'UserOrderCollection')->name('user.collection.page');
         Route::get('/user/order_given/{order_id}', 'UserOrderGiven');

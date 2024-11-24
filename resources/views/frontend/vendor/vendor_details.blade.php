@@ -27,23 +27,22 @@ Vendor Details Page
                     <div class="sort-by-cover mr-10">
                         <div class="sort-by-product-wrap">
                             <div class="sort-by">
-                                <span><i class="fi-rs-apps"></i>Show:</span>
+                                <span><i class="fi-rs-apps"></i>Select Vendor</span>
                             </div>
                             <div class="sort-by-dropdown-wrap">
-                                <span> 50 <i class="fi-rs-angle-small-down"></i></span>
+
                             </div>
                         </div>
                         <div class="sort-by-dropdown">
                             <ul>
-                                <li><a class="active" href="#">50</a></li>
-                                <li><a href="#">100</a></li>
-                                <li><a href="#">150</a></li>
-                                <li><a href="#">200</a></li>
-                                <li><a href="#">All</a></li>
+
+                                @foreach ( $vendors as $vendor )
+                                <li><a href="vendor/details/{{$vendor->id}}">{{$vendor->name}}</a></li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
-                    <div class="sort-by-cover">
+                    <!-- <div class="sort-by-cover">
                         <div class="sort-by-product-wrap">
                             <div class="sort-by">
                                 <span><i class="fi-rs-apps-sort"></i>Sort by:</span>
@@ -61,7 +60,7 @@ Vendor Details Page
                                 <li><a href="#">Avg. Rating</a></li>
                             </ul>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="row product-grid">
