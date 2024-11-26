@@ -50,7 +50,7 @@ class ProductController extends Controller
             'term' => 'required|in:First,Second',
             'brand_id' => 'required|exists:brands,id',
             'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'required|exists:subcategories,id',
+            'subcategory_id' => 'required',
             'product_name' => 'required|string|max:255',
             'product_code' => 'required|unique:products,product_code',
             'product_qty' => 'required|integer|min:1',
