@@ -66,7 +66,7 @@ class ProductController extends Controller
             'special_offer' => 'nullable|boolean',
             'special_deals' => 'nullable|boolean',
             'product_thambnail' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'vendor_id' => 'nullable|exists:vendors,id',
+            'vendor_id' => 'nullable',
         ]);
 
 
