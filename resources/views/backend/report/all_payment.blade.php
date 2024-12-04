@@ -38,6 +38,7 @@
                             <th>Amount </th>
                             <th>Method </th>
                             <th>Status </th>
+                            <th>Action </th>
 
                         </tr>
                     </thead>
@@ -52,6 +53,11 @@
                             <td>₦{{ number_format($item->amount,0) }}</td>
                             <td> {{ $item->payment_type }}</td>
                             <td> {{ $item->status }}</td>
+                            <td> <a href="{{ route('admin.order.details',$item->id) }}" class="btn btn-info" title="Details"><i class="fa fa-eye"></i> </a>
+
+                                <a href="{{ route('admin.invoice.download',$item->id) }}" class="btn btn-danger" title="Invoice Pdf"><i class="fa fa-download"></i> </a>
+
+                            </td>
 
 
 
