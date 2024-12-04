@@ -66,8 +66,12 @@ $featured = App\Models\Product::where('featured',1)->where('term', $currentTerm)
                                     </div>
                                     <div class="product-content-wrap">
                                         <div class="product-category">
-                                            <a href="#">{{ $product['category']['category_name'] }}</a>
+                                            <a href="shop-grid-right.html">
+                                                {{ $product->category ? $product->category->category_name : 'Uncategorized' }}
+                                            </a>
                                         </div>
+
+
                                         <h2><a href="{{ url('product/details/'.$product->id.'/'.$product->product_slug) }}">{{ $product->product_name }}</a></h2>
 
                                         @php

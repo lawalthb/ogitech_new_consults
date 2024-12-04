@@ -685,7 +685,9 @@ Route::get('/get_quote', function () {
 })->name('get_quote');
 
 
-
+Route::get('/500-test', function () {
+    abort(500);
+});
 
 
 
