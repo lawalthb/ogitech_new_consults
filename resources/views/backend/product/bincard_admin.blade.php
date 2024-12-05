@@ -54,7 +54,7 @@
                 <a href="{{ route('remove.stock', ['id' => $stock->id]) }}">[Remove]</a>
                 @else
 
-                {{ $stock->id }}
+              N/A
                 @endif
               </td>
 
