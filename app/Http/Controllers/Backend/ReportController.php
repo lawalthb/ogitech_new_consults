@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\Statement;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 
 class ReportController extends Controller
@@ -69,6 +70,7 @@ $status = $_GET['status'] ?? 'confirm';
 
     public function SearchByMonth(Request $request)
     {
+       // DB::enableQueryLog();
 
         $month = $request->month;
         $status = $_GET['status'] ?? 'confirm';
@@ -86,8 +88,8 @@ $status = $_GET['status'] ?? 'confirm';
 
         // Calculate the sum of the 'amount' column
         $totalAmount = $orders->sum('amount');
-
-
+       // dd(DB::getQueryLog());
+//dd($orders);
         return view('backend.report.report_by_month', compact('orders', 'month', 'year', 'totalAmount'));
     } // End Method
 
