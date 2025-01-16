@@ -78,8 +78,8 @@ $status = $_GET['status'] ?? 'confirm';
             return "Please select Year";
         } else if ($year == "") {
 
-            $month = $request->month ?? Carbon::now()->format('F');
-            $year = $request->year_name ?? Carbon::now()->format('Y');
+            $month = $_GET['month'] ?? Carbon::now()->format('F');
+            $year = $_GET['year'] ?? Carbon::now()->format('Y');
         }
 
         $orders = Order::where('order_month', $month)->where('order_year', $year)->where('status', $status)->latest()->get();
