@@ -156,14 +156,27 @@
             </div>
             <div class="product-extra-link2">
 
+
+
+                @php
+
+                $current_semester = \App\Models\CurrentTerm::where('id',1)->where('is_active','Yes')->value('term');
+
+                $book_semester = $product->term;
+                @endphp
+
+                @if($current_semester == $book_semester)
                 <input type="hidden" id="dproduct_id" value="{{ $product->id }}">
 
                 <input type="hidden" id="vproduct_id" value="{{ $product->vendor_id }}">
-
                 <button type="submit" class="button button-add-to-cart" onclick="addToCartDetails()"><i class="fi-rs-shopping-cart"></i>Add to cart</button>
-
-
                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                @elseif ($current_semester != $book_semester)
+
+                <span class="text-danger">This book is not available for this semester</span>
+                @endif
+
+
                 <!-- <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a> -->
             </div>
         </div>
