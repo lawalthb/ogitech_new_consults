@@ -57,7 +57,7 @@
             <label class="form-label">Select Month:</label>
             <select name="month" class="form-select mb-3" aria-label="Default select example">
               <option selected="">Open this select Month</option>
-              <option value="Janurary">Janurary</option>
+              <option value="January">January</option>
               <option value="February">February</option>
               <option value="March">March</option>
               <option value="April">April</option>
