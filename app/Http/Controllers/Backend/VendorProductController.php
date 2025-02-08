@@ -54,7 +54,7 @@ class VendorProductController extends Controller
         $save_url = 'upload/products/thambnail/' . $name_gen;
 
         $product_id = Product::insertGetId([
-
+            'term' => $request->term,
             'brand_id' => $request->brand_id,
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
@@ -79,7 +79,7 @@ class VendorProductController extends Controller
 
             'product_thambnail' => $save_url,
             'vendor_id' => Auth::user()->id,
-            'status' => 1,
+            'status' => 0,
             'created_at' => Carbon::now(),
 
         ]);

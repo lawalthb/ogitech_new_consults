@@ -34,12 +34,12 @@
 
 
 								<div class="form-group mb-3">
-									<label for="inputProductTitle" class="form-label">Select Term</label>
+									<label for="inputProductTitle" class="form-label">Select Semester</label>
 									<div class="row">
 										<div class="col-md-4">
 											<div class="form-check">
 												<input class="form-check-input" name="term" type="radio" value="First" id="flexCheckDefault">
-												<label class="form-check-label" for="flexCheckDefault">First Term</label>
+												<label class="form-check-label" for="flexCheckDefault">First Semester</label>
 											</div>
 										</div>
 
@@ -47,7 +47,7 @@
 										<div class="col-md-4">
 											<div class="form-check">
 												<input class="form-check-input" name="term" checked type="radio" value="Second" id="flexCheckDefault">
-												<label class="form-check-label" for="flexCheckDefault">Second Term</label>
+												<label class="form-check-label" for="flexCheckDefault">Second Semester</label>
 											</div>
 										</div>
 
