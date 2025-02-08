@@ -12,6 +12,7 @@ use App\Models\CurrentTerm;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\DB;
 use Auth;
 
 class IndexController extends Controller
@@ -74,6 +75,11 @@ class IndexController extends Controller
     {
 
         $product = Product::findOrFail($id);
+         // Calculate available stock from stocks table
+    $totalIn = DB::table('stocks')->where('item_id', $id)->sum('item_in');
+    $totalOut = DB::table('stocks')->where('item_id', $id)->sum('item_out');
+    $availableStock = $totalIn - $totalOut;
+
 
         $color = $product->product_color;
         $product_color = explode(',', $color);
@@ -86,7 +92,7 @@ class IndexController extends Controller
         $cat_id = $product->category_id;
         $relatedProduct = Product::where('category_id', $cat_id)->where('id', '!=', $id)->orderBy('id', 'DESC')->limit(4)->get();
 
-        return view('frontend.product.product_details', compact('product', 'product_color', 'product_size', 'multiImage', 'relatedProduct'));
+        return view('frontend.product.product_details', compact('product', 'product_color', 'product_size', 'multiImage', 'relatedProduct', 'availableStock'));
     } // End Method
 
 

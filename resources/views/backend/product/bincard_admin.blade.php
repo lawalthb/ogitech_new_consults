@@ -24,7 +24,7 @@
   <div class="card">
     <div class="card-body">
       <div class="table-responsive">
-        <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <table class="table table-striped table-bordered" style="width:100%">
           <thead>
             <tr>
               <th>SN</th>
@@ -48,7 +48,15 @@
               <td>{{ $stock->item_in }}</td>
               <td>{{ $stock->item_out }}</td>
 
-              <td>{{ $stock->item_balance }}</td>
+              <td> @php
+        $balance = 0;
+        foreach($stocks as $item) {
+            if($item->id <= $stock->id) {
+                $balance += ($item->item_in - $item->item_out);
+            }
+        }
+        echo $balance;
+    @endphp</td>
               <td>
                 @if ($stock->id != 1)
                 <a href="{{ route('remove.stock', ['id' => $stock->id]) }}">[Remove]</a>

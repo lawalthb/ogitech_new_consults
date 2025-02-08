@@ -41,11 +41,12 @@
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12">
                         <div class="detail-info pr-30 pl-30">
-                            @if($product->product_qty > 0)
-                            <span class="stock-status in-stock">In Stock </span>
-                            @else
-                            <span class="stock-status out-stock">Stock Out </span>
-                            @endif
+                            @if($availableStock > 0)
+    <span class="stock-status in-stock">In Stock ({{ $availableStock }} available)</span>
+@else
+    <span class="stock-status out-stock">Stock Out</span>
+@endif
+
 
 
 
