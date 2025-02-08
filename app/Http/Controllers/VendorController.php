@@ -3,23 +3,74 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 use App\Notifications\VendorRegNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 
 class VendorController extends Controller
 {
     public function VendorDashboard()
-    {
+{
+    $id = Auth::user()->id;
+   $recentOrders = OrderItem::where('vendor_id', $id)
+        ->with(['order', 'product', 'order.user'])
+        ->latest()
+        ->take(10)
+        ->get();
 
-        return view('vendor.index');
-    } // End Mehtod
+    $orderItems = OrderItem::where('vendor_id', $id)->pluck('order_id');
+    $totalOrders = Order::whereIn('id', $orderItems)->distinct()->count();
+    $pendingOrders = Order::whereIn('id', $orderItems)->where('status', 'pending')->distinct()->count();
+    $deliveredOrders = Order::whereIn('id', $orderItems)->where('status', 'deliverd')->distinct()->count();
 
+    // Calculate revenue from OrderItem
+    $totalRevenue = OrderItem::where('vendor_id', $id)
+                    ->whereHas('order', function($q) {
+                        $q->where('status', 'deliverd');
+                    })
+                    ->sum(DB::raw('price * qty'));
+
+    // Get products data
+    $totalProducts = Product::where('vendor_id', $id)->count();
+    $outOfStockProducts = Product::where('vendor_id', $id)
+                                ->whereRaw('(SELECT SUM(item_in) - SUM(item_out) FROM stocks WHERE stocks.item_id = products.id) <= 0')
+                                ->count();
+
+    // Get monthly sales data for chart through OrderItem
+  // In VendorController:
+$monthlySales = OrderItem::where('vendor_id', $id)
+    ->whereHas('order', function($q) {
+        $q->where('status', 'deliverd')
+          ->whereYear('created_at', date('Y'));
+    })
+    ->select(
+        DB::raw('sum(price * qty) as total'),
+        DB::raw('MONTH(created_at) as month')
+    )
+    ->groupBy('month')
+    ->get();
+
+
+    return view('vendor.index', compact(
+        'totalOrders',
+        'pendingOrders',
+        'deliveredOrders',
+        'totalRevenue',
+        'totalProducts',
+        'outOfStockProducts',
+        'monthlySales',
+         'recentOrders'
+    ));
+}
     public function VendorLogin()
     {
         return view('vendor.vendor_login');
