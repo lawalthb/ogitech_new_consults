@@ -38,7 +38,7 @@ class VendorController extends Controller
                         $q->where('status', 'deliverd');
                     })
                     ->sum(DB::raw('price * qty'));
-
+//testing git
     // Get products data
     $totalProducts = Product::where('vendor_id', $id)->count();
     $outOfStockProducts = Product::where('vendor_id', $id)

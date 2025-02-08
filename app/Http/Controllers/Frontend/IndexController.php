@@ -90,7 +90,7 @@ class IndexController extends Controller
         $multiImage = MultiImg::where('product_id', $id)->get();
 
         $cat_id = $product->category_id;
-        $relatedProduct = Product::where('category_id', $cat_id)->where('id', '!=', $id)->orderBy('id', 'DESC')->limit(4)->get();
+        $relatedProduct = Product::where('category_id', $cat_id)->where('status', 1)->where('id', '!=', $id)->orderBy('id', 'DESC')->limit(4)->get();
 
         return view('frontend.product.product_details', compact('product', 'product_color', 'product_size', 'multiImage', 'relatedProduct', 'availableStock'));
     } // End Method
@@ -102,7 +102,7 @@ class IndexController extends Controller
         $vendors = User::where('status', 'active')->where('role', 'vendor')->orderBy('id', 'DESC')->get();
         $currentTerm = CurrentTerm::where('id', 1)->value('term');
         $vendor = User::findOrFail($id);
-        $vproduct = Product::where('vendor_id', $id)->where('term', $currentTerm)->get();
+        $vproduct = Product::where('vendor_id', $id)->where('status', 1)->where('term', $currentTerm)->get();
 
         return view('frontend.vendor.vendor_details', compact('vendor', 'vproduct', 'vendors'));
     } // End Method
@@ -123,7 +123,7 @@ class IndexController extends Controller
 
         $breadcat = Category::where('id', $id)->first();
 
-        $newProduct = Product::orderBy('id', 'DESC')->limit(3)->get();
+        $newProduct = Product::orderBy('id', 'DESC')->where('status', 1)->limit(3)->get();
 
         return view('frontend.product.category_view', compact('products', 'categories', 'breadcat', 'newProduct'));
     } // End Method
@@ -145,7 +145,7 @@ class IndexController extends Controller
     public function ProductViewAjax($id)
     {
 
-        $product = Product::with('category', 'brand')->findOrFail($id);
+        $product = Product::with('category', 'brand')->where('status', 1)->findOrFail($id);
         $color = $product->product_color;
         $product_color = explode(',', $color);
 
@@ -169,8 +169,8 @@ class IndexController extends Controller
 
         $item = $request->search;
         $categories = Category::orderBy('category_name', 'ASC')->get();
-        $products = Product::where('product_name', 'LIKE', "%$item%")->get();
-        $newProduct = Product::orderBy('id', 'DESC')->limit(3)->get();
+        $products = Product::where('product_name', 'LIKE', "%$item%")->where('status', 1)->get();
+        $newProduct = Product::orderBy('id', 'DESC')->where('status', 1)->limit(3)->get();
         return view('frontend.product.search', compact('products', 'item', 'categories', 'newProduct'));
     } // End Method
 
@@ -179,9 +179,9 @@ class IndexController extends Controller
     {
 
         $request->validate(['search' => "required"]);
-
+//testing git
         $item = $request->search;
-        $products = Product::where('product_name', 'LIKE', "%$item%")->select('product_name', 'product_slug', 'product_thambnail', 'selling_price', 'id')->limit(6)->get();
+        $products = Product::where('product_name', 'LIKE', "%$item%")->where('status', 1)->select('product_name', 'product_slug', 'product_thambnail', 'selling_price', 'id')->limit(6)->get();
 
         return view('frontend.product.search_product', compact('products'));
     } // End Method
@@ -190,11 +190,11 @@ class IndexController extends Controller
     {
 
         $currentTerm = CurrentTerm::where('id', 1)->value('term');
-        $products = Product::all()->where('term', $currentTerm);
+        $products = Product::all()->where('status', 1)->where('term', $currentTerm);
         $vendors = User::where('status', 'active')->where('role', 'vendor')->orderBy('id', 'DESC')->get();
         $categories = Category::orderBy('category_name', 'ASC')->get();
 
-        $newProduct = Product::orderBy('id', 'DESC')->where('term', $currentTerm)->limit(3)->get();
+        $newProduct = Product::orderBy('id', 'DESC')->where('status', 1)->where('term', $currentTerm)->limit(3)->get();
 
 
 
