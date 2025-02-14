@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Backend\BrandController;
@@ -689,9 +690,8 @@ Route::get('/500-test', function () {
     abort(500);
 });
 
-
-
-
 Route::get('/paystack/callback', [PaymentController::class, 'callback1'])->name('callback1');
 Route::get('/nomba/callback', [PaymentController::class, 'callback'])->name('callback');
 Route::get('/read_notice', [ActiveUserController::class, 'read_notification'])->name('read_notice');
+
+
