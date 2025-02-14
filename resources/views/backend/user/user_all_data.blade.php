@@ -63,6 +63,7 @@
 							<td>
 								<a href="{{ route('edit_user',$item->id) }}" class="btn btn-info">Edit</a>
 								<a href="{{ route('delete_user',$item->id) }}" class="btn btn-danger" title="If you delete this user, all his orders too will be deleted!" id="delete">Delete</a>
+                                    <a href="{{ route('reset.vendor.password',$item->id) }}" class="btn btn-warning" id="reset">Reset Password</a>
 
 							</td>
 						</tr>
