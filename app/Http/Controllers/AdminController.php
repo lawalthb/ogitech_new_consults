@@ -454,4 +454,17 @@ class AdminController extends Controller
             return redirect()->back()->withErrors(['error' => 'An error occurred while undoing the stock entry.']);
         }
     }
+    public function resetVendorPassword($id){
+        User::findOrFail($id)->update([
+            'password' => Hash::make('consults1234')
+        ]);
+
+        $notification = array(
+            'message' => 'Vendor Password Reset Successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->back()->with($notification);
+    }
 }
+
